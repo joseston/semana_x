@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f6f53" />
+  <title>Farmacias 3D Lima</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">Visualización operativa</span>
+        <h1>Farmacias en Lima</h1>
+        <p>Vista 3D inicial de las sedes de Lince y Surco.</p>
+      </div>
+
+      <div class="location-cards">
+        <article class="location-card">
+          <span class="pin">●</span>
+          <div>
+            <strong>CIDON · Lince</strong>
+            <small>Sede operativa · Lima Centro</small>
+          </div>
+        </article>
+        <article class="location-card">
+          <span class="pin">●</span>
+          <div>
+            <strong>CIATOB · Surco</strong>
+            <small>Sede operativa · Lima Sur</small>
+          </div>
+        </article>
+      </div>
+    </header>
+
+    <section class="viewer" aria-label="Visualización 3D de farmacias">
+      <div id="scene"></div>
+      <div class="scene-badge">Lima · Perú</div>
+      <div class="controls-hint">Arrastra para rotar · rueda para acercar · clic derecho para mover</div>
+    </section>
+  </main>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
