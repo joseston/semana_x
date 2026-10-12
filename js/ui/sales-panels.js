@@ -8,6 +8,8 @@ import {
   salesPanels,
 } from '../core.js';
 
+let panelsVisible = true;
+
 function createLeader(side) {
   const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   path.classList.add('leader-path');
@@ -74,6 +76,12 @@ export function createSalesPanel(data, side, anchor, focus, onFocus) {
   return panel;
 }
 
+export function setSalesPanelsVisible(visible) {
+  panelsVisible = visible;
+  panelLayer.style.display = visible ? '' : 'none';
+  leaderLayer.style.display = visible ? '' : 'none';
+}
+
 export function refreshPanelGeometry() {
   const hostRect = host.getBoundingClientRect();
   salesPanels.forEach((panel) => {
@@ -98,6 +106,8 @@ function projectToScreen(world) {
 }
 
 export function updateLeaderLines() {
+  if (!panelsVisible) return;
+
   const width = host.clientWidth;
   const height = host.clientHeight;
 

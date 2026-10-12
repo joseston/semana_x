@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { scene, mat, box } from './core.js';
 import { colors, siteThemes, salesBySite, siteLayout } from './config.js';
+import { inventoryBySite } from './data/inventory.js';
 import { createPharmacy } from './models/pharmacy.js';
 import { createSalesPanel } from './ui/sales-panels.js';
 
@@ -113,6 +114,7 @@ export function buildScene({ onFocus }) {
     createPharmacy({
       ...site,
       theme: siteThemes[site.siteKey],
+      inventory: inventoryBySite[site.siteKey],
     });
 
     createSalesPanel(
