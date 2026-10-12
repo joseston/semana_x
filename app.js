@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 const host = document.querySelector('#scene');
 
@@ -18,18 +17,17 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 host.appendChild(renderer.domElement);
 
-const labelRenderer = new CSS2DRenderer();
-labelRenderer.domElement.style.position = 'absolute';
-labelRenderer.domElement.style.inset = '0';
-labelRenderer.domElement.style.pointerEvents = 'none';
-host.appendChild(labelRenderer.domElement);
+const panelLayer = document.createElement('div');
+panelLayer.className = 'panel-layer';
+host.appendChild(panelLayer);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.06;
 controls.enablePan = true;
-controls.minDistance = 9;
-controls.maxDistance = 27;
+controls.enableZoom = false;
+controls.minDistance = 7;
+controls.maxDistance = 30;
 controls.minPolarAngle = Math.PI * 0.18;
 controls.maxPolarAngle = Math.PI * 0.47;
 controls.target.set(0, 1.35, 0);
@@ -52,11 +50,8 @@ const colors = {
   greenDark: '#0f654a',
   white: '#f8fbf9',
   wall: '#eef4f0',
-  wallSide: '#dbe8e1',
   glass: '#72aa9a',
   asphalt: '#9dafaa',
-  grass: '#dfe9e3',
-  curb: '#c5d4cc',
 };
 
 const salesBySite = {
@@ -82,6 +77,12 @@ const salesBySite = {
   },
 };
 
+const salesPanels = [];
+const raycaster = new THREE.Raycaster();
+const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+const pointer = new THREE.Vector2();
+const tmpHit = new THREE.Vector3();
+
 function mat(color, extra = {}) {
   return new THREE.MeshStandardMaterial({ color, roughness: 0.78, ...extra });
 }
@@ -105,7 +106,6 @@ function roundedSign(parent, text, position) {
   ctx.fillStyle = '#0f654a';
   ctx.roundRect(18, 18, 988, 284, 42);
   ctx.fill();
-
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = 12;
   ctx.roundRect(28, 28, 968, 264, 34);
@@ -116,7 +116,6 @@ function roundedSign(parent, text, position) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('FARMACIA', 512, 92);
-
   ctx.fillStyle = '#ffffff';
   ctx.font = '700 112px Bricolage Grotesque, IBM Plex Sans, sans-serif';
   ctx.fillText(text, 512, 205);
@@ -139,18 +138,10 @@ function pharmacyCross(parent, position) {
   parent.add(cross);
 }
 
-function makeLabel(name, district) {
-  const el = document.createElement('div');
-  el.className = 'label';
-  el.innerHTML = `<strong>${name}</strong><span>${district}</span>`;
-  const obj = new CSS2DObject(el);
-  obj.position.set(0, 3.75, 0);
-  return obj;
-}
-
-function makeSalesPanel(data) {
+function makeSalesPanel(data, anchor, focus) {
   const el = document.createElement('div');
   el.className = 'sales-panel';
+  el.dataset.site = data.name;
 
   const mounjaroRows = data.mounjaro
     .map(([dose, units, amount]) => `<tr><td>${dose}</td><td>${units}</td><td>${amount}</td></tr>`)
@@ -182,7 +173,28 @@ function makeSalesPanel(data) {
       <strong>${data.totalAmount}</strong>
     </div>`;
 
-  return new CSS2DObject(el);
+  panelLayer.appendChild(el);
+
+  const panel = {
+    data,
+    el,
+    anchor: anchor.clone(),
+    focus: focus.clone(),
+    x: null,
+    y: null,
+    targetX: 0,
+    targetY: 0,
+  };
+  salesPanels.push(panel);
+
+  el.addEventListener('pointerdown', (event) => event.stopPropagation());
+  el.addEventListener('wheel', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    smartZoom(event.deltaY, panel.focus);
+  }, { passive: false });
+
+  return panel;
 }
 
 function createPharmacy({ name, district, x, z, rotation = 0 }) {
@@ -195,34 +207,30 @@ function createPharmacy({ name, district, x, z, rotation = 0 }) {
   box([3.9, 2.25, 2.65], [0, 1.35, 0], mat(colors.wall), root);
   box([4.15, 0.48, 2.86], [0, 2.58, 0], mat(colors.green), root);
 
-  // Front glass storefront
   box([1.12, 1.55, 0.1], [0.72, 1.22, 1.38], mat(colors.glass, { metalness: 0.05, roughness: 0.22 }), root);
   box([1.28, 0.94, 0.1], [-0.78, 1.50, 1.38], mat('#9ac6b9', { metalness: 0.03, roughness: 0.22 }), root);
   box([0.07, 0.94, 0.13], [-0.78, 1.50, 1.44], mat('#f6fbf8'), root);
   box([1.28, 0.07, 0.13], [-0.78, 1.50, 1.44], mat('#f6fbf8'), root);
 
-  // Side windows
   box([0.1, 0.88, 1.1], [1.96, 1.45, 0.28], mat('#8dbbad', { roughness: 0.25 }), root);
   box([0.13, 0.88, 0.07], [2.02, 1.45, 0.28], mat('#eff8f4'), root);
 
-  // Awning and entry step
   box([2.95, 0.13, 0.48], [-0.08, 2.12, 1.57], mat('#f8fbf9'), root);
   box([1.2, 0.12, 0.75], [0.72, 0.24, 1.68], mat('#bdccc4'), root);
 
-  // The pharmacy sign is a camera-facing sprite so it stays legible while rotating.
+  // Único identificador visible de la sede: letrero físico de fachada.
   roundedSign(root, name, [0, 2.76, 1.78]);
   pharmacyCross(root, [-1.72, 2.70, 1.64]);
 
-  // Roof equipment for extra depth
   box([1.0, 0.35, 0.72], [0.85, 2.98, -0.45], mat('#c9d6d0'), root);
   box([0.5, 0.24, 0.48], [-0.8, 2.93, -0.55], mat('#b5c6be'), root);
 
-  root.add(makeLabel(name, district));
-
-  const salesPanel = makeSalesPanel(salesBySite[name]);
-  const side = x < 0 ? -1 : 1;
-  salesPanel.position.set(x + side * 2.8, 5.45, z + (x < 0 ? 0.2 : -0.2));
-  scene.add(salesPanel);
+  // Panel independiente en overlay: sigue la sede, pero evita colisiones en pantalla.
+  makeSalesPanel(
+    salesBySite[name],
+    new THREE.Vector3(x, 4.65, z),
+    new THREE.Vector3(x, 1.25, z)
+  );
 
   return root;
 }
@@ -258,7 +266,6 @@ function createStreetLight(x, z, rot = 0) {
   scene.add(g);
 }
 
-// Ground platform
 const island = new THREE.Mesh(
   new THREE.CylinderGeometry(9.1, 9.5, 0.45, 72),
   mat('#dce7e1')
@@ -273,7 +280,6 @@ park.position.y = 0.005;
 park.receiveShadow = true;
 scene.add(park);
 
-// Roads
 function road(w, d, x, z, rotation = 0) {
   const r = new THREE.Mesh(new THREE.BoxGeometry(w, 0.055, d), mat(colors.asphalt));
   r.position.set(x, 0.055, z);
@@ -291,11 +297,9 @@ function road(w, d, x, z, rotation = 0) {
 road(15.6, 1.65, 0, 0, 0);
 road(13.6, 1.2, -0.3, 0.4, Math.PI / 2.8);
 
-// Buildings + per-site sales panels
 createPharmacy({ name: 'CIDON', district: 'Lince', x: -4.1, z: -2.7, rotation: 0.11 });
 createPharmacy({ name: 'CIATOB', district: 'Surco', x: 4.1, z: 2.75, rotation: Math.PI + 0.11 });
 
-// Landscaping
 [
   [-6.6, 3.5, .85],[-5.6, 4.4,.68],[-2.1,4.9,.75],[2.0,-4.7,.78],
   [5.8,-3.8,.85],[6.8,-2.2,.65],[-6.9,-.9,.7],[6.9,.7,.72],
@@ -307,7 +311,6 @@ createStreetLight(2.9, -1.2, Math.PI);
 createStreetLight(-0.8, -2.4, Math.PI / 2);
 createStreetLight(0.8, 2.4, -Math.PI / 2);
 
-// Small route markers
 for (let i = 0; i < 11; i++) {
   const t = i / 10;
   const x = THREE.MathUtils.lerp(-2.2, 2.2, t);
@@ -317,13 +320,145 @@ for (let i = 0; i < 11; i++) {
   scene.add(marker);
 }
 
+function smartZoom(deltaY, explicitFocus = null, clientX = null, clientY = null) {
+  const focus = explicitFocus ? explicitFocus.clone() : new THREE.Vector3();
+
+  if (!explicitFocus && clientX !== null && clientY !== null) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    pointer.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+    if (!raycaster.ray.intersectPlane(groundPlane, tmpHit)) {
+      focus.copy(controls.target);
+    } else {
+      focus.copy(tmpHit);
+    }
+  } else if (!explicitFocus) {
+    focus.copy(controls.target);
+  }
+
+  const factor = THREE.MathUtils.clamp(Math.exp(deltaY * 0.0015), 0.78, 1.28);
+  const offset = camera.position.clone().sub(focus);
+  const nextDistance = THREE.MathUtils.clamp(offset.length() * factor, 6.8, 30);
+  offset.setLength(nextDistance);
+  camera.position.copy(focus).add(offset);
+
+  const zoomingIn = deltaY < 0;
+  controls.target.lerp(focus, zoomingIn ? 0.36 : 0.09);
+  controls.update();
+}
+
+renderer.domElement.addEventListener('wheel', (event) => {
+  event.preventDefault();
+  smartZoom(event.deltaY, null, event.clientX, event.clientY);
+}, { passive: false });
+
+function projectToScreen(world, width, height) {
+  const p = world.clone().project(camera);
+  return {
+    x: (p.x * 0.5 + 0.5) * width,
+    y: (-p.y * 0.5 + 0.5) * height,
+    visible: p.z > -1 && p.z < 1,
+  };
+}
+
+function rectFromCenter(x, y, width, height) {
+  return {
+    left: x - width / 2,
+    right: x + width / 2,
+    top: y - height / 2,
+    bottom: y + height / 2,
+    width,
+    height,
+  };
+}
+
+function overlaps(a, b, gap = 16) {
+  return !(
+    a.right + gap < b.left ||
+    b.right + gap < a.left ||
+    a.bottom + gap < b.top ||
+    b.bottom + gap < a.top
+  );
+}
+
+function updateSalesPanels() {
+  const width = host.clientWidth;
+  const height = host.clientHeight;
+  if (!width || !height) return;
+
+  const margin = width < 700 ? 12 : 20;
+  const desired = salesPanels.map((panel) => {
+    const projected = projectToScreen(panel.anchor, width, height);
+    const pw = panel.el.offsetWidth || 255;
+    const ph = panel.el.offsetHeight || 260;
+    const outward = projected.x < width / 2 ? -1 : 1;
+
+    let x = projected.x + outward * (pw * 0.42 + 38);
+    let y = projected.y - ph * 0.12;
+
+    x = THREE.MathUtils.clamp(x, margin + pw / 2, width - margin - pw / 2);
+    y = THREE.MathUtils.clamp(y, margin + ph / 2, height - margin - ph / 2);
+
+    return { panel, x, y, pw, ph, visible: projected.visible };
+  });
+
+  if (desired.length === 2) {
+    const a = desired[0];
+    const b = desired[1];
+    let ar = rectFromCenter(a.x, a.y, a.pw, a.ph);
+    let br = rectFromCenter(b.x, b.y, b.pw, b.ph);
+
+    if (overlaps(ar, br)) {
+      const horizontalPush = (a.pw + b.pw) / 2 + 28;
+      const leftFirst = a.x <= b.x;
+      const center = (a.x + b.x) / 2;
+      a.x = center + (leftFirst ? -horizontalPush / 2 : horizontalPush / 2);
+      b.x = center + (leftFirst ? horizontalPush / 2 : -horizontalPush / 2);
+
+      a.x = THREE.MathUtils.clamp(a.x, margin + a.pw / 2, width - margin - a.pw / 2);
+      b.x = THREE.MathUtils.clamp(b.x, margin + b.pw / 2, width - margin - b.pw / 2);
+      ar = rectFromCenter(a.x, a.y, a.pw, a.ph);
+      br = rectFromCenter(b.x, b.y, b.pw, b.ph);
+
+      if (overlaps(ar, br)) {
+        const verticalPush = (a.ph + b.ph) / 2 + 22;
+        const topFirst = a.y <= b.y;
+        const midY = (a.y + b.y) / 2;
+        a.y = midY + (topFirst ? -verticalPush / 2 : verticalPush / 2);
+        b.y = midY + (topFirst ? verticalPush / 2 : -verticalPush / 2);
+        a.y = THREE.MathUtils.clamp(a.y, margin + a.ph / 2, height - margin - a.ph / 2);
+        b.y = THREE.MathUtils.clamp(b.y, margin + b.ph / 2, height - margin - b.ph / 2);
+      }
+    }
+  }
+
+  desired.forEach(({ panel, x, y, visible }) => {
+    if (panel.x === null) {
+      panel.x = x;
+      panel.y = y;
+    }
+    panel.targetX = x;
+    panel.targetY = y;
+    panel.x += (panel.targetX - panel.x) * 0.14;
+    panel.y += (panel.targetY - panel.y) * 0.14;
+
+    const dist = camera.position.distanceTo(panel.focus);
+    const scale = THREE.MathUtils.clamp(13.5 / dist, 0.88, 1.13);
+    panel.el.style.left = `${panel.x}px`;
+    panel.el.style.top = `${panel.y}px`;
+    panel.el.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    panel.el.style.opacity = visible ? '1' : '0';
+  });
+}
+
 function resize() {
   const width = host.clientWidth;
   const height = host.clientHeight;
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
   renderer.setSize(width, height, false);
-  labelRenderer.setSize(width, height);
+  updateSalesPanels();
 }
 
 window.addEventListener('resize', resize);
@@ -332,7 +467,7 @@ resize();
 function animate() {
   requestAnimationFrame(animate);
   controls.update();
+  updateSalesPanels();
   renderer.render(scene, camera);
-  labelRenderer.render(scene, camera);
 }
 animate();
