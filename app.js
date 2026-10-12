@@ -6,10 +6,10 @@ const host = document.querySelector('#scene');
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#edf3f0');
-scene.fog = new THREE.Fog('#edf3f0', 18, 38);
+scene.fog = new THREE.Fog('#edf3f0', 19, 40);
 
 const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-camera.position.set(11.5, 9.2, 13.5);
+camera.position.set(12.8, 10.2, 15.2);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -28,11 +28,11 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.06;
 controls.enablePan = true;
-controls.minDistance = 8;
-controls.maxDistance = 24;
+controls.minDistance = 9;
+controls.maxDistance = 27;
 controls.minPolarAngle = Math.PI * 0.18;
 controls.maxPolarAngle = Math.PI * 0.47;
-controls.target.set(0, 1.0, 0);
+controls.target.set(0, 1.35, 0);
 
 scene.add(new THREE.HemisphereLight('#f9fffb', '#9caf9f', 2.15));
 const sun = new THREE.DirectionalLight('#ffffff', 3.4);
@@ -59,6 +59,29 @@ const colors = {
   curb: '#c5d4cc',
 };
 
+const salesBySite = {
+  CIDON: {
+    name: 'CIDON', district: 'Lince', totalUnits: 324, totalAmount: 'S/ 434,885.48',
+    mounjaro: [
+      ['2.5 mg', 66, 'S/ 65,259.70'],
+      ['5.0 mg', 162, 'S/ 209,962.00'],
+      ['7.5 mg', 17, 'S/ 32,218.78'],
+      ['10.0 mg', 36, 'S/ 73,715.00'],
+    ],
+    wegovy: [['2.4 mg', 43, 'S/ 53,730.00']],
+  },
+  CIATOB: {
+    name: 'CIATOB', district: 'Surco', totalUnits: 209, totalAmount: 'S/ 270,540.20',
+    mounjaro: [
+      ['2.5 mg', 48, 'S/ 47,799.70'],
+      ['5.0 mg', 134, 'S/ 174,651.00'],
+      ['7.5 mg', 6, 'S/ 11,465.50'],
+      ['10.0 mg', 12, 'S/ 25,197.00'],
+    ],
+    wegovy: [['2.4 mg', 9, 'S/ 11,427.00']],
+  },
+};
+
 function mat(color, extra = {}) {
   return new THREE.MeshStandardMaterial({ color, roughness: 0.78, ...extra });
 }
@@ -75,22 +98,36 @@ function box(size, position, material, parent, options = {}) {
 
 function roundedSign(parent, text, position) {
   const canvas = document.createElement('canvas');
-  canvas.width = 512;
-  canvas.height = 128;
+  canvas.width = 1024;
+  canvas.height = 320;
   const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#167b5a';
-  ctx.roundRect(10, 10, 492, 108, 24);
+
+  ctx.fillStyle = '#0f654a';
+  ctx.roundRect(18, 18, 988, 284, 42);
   ctx.fill();
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '700 54px IBM Plex Sans, sans-serif';
+
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 12;
+  ctx.roundRect(28, 28, 968, 264, 34);
+  ctx.stroke();
+
+  ctx.fillStyle = '#dff4e9';
+  ctx.font = '700 48px IBM Plex Sans, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(text, 256, 64);
+  ctx.fillText('FARMACIA', 512, 92);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 112px Bricolage Grotesque, IBM Plex Sans, sans-serif';
+  ctx.fillText(text, 512, 205);
+
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true }));
+  const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
+  const sprite = new THREE.Sprite(material);
   sprite.position.set(...position);
-  sprite.scale.set(3.5, 0.88, 1);
+  sprite.scale.set(4.8, 1.5, 1);
+  sprite.renderOrder = 20;
   parent.add(sprite);
 }
 
@@ -107,8 +144,45 @@ function makeLabel(name, district) {
   el.className = 'label';
   el.innerHTML = `<strong>${name}</strong><span>${district}</span>`;
   const obj = new CSS2DObject(el);
-  obj.position.set(0, 3.6, 0);
+  obj.position.set(0, 3.75, 0);
   return obj;
+}
+
+function makeSalesPanel(data) {
+  const el = document.createElement('div');
+  el.className = 'sales-panel';
+
+  const mounjaroRows = data.mounjaro
+    .map(([dose, units, amount]) => `<tr><td>${dose}</td><td>${units}</td><td>${amount}</td></tr>`)
+    .join('');
+  const wegovyRows = data.wegovy
+    .map(([dose, units, amount]) => `<tr><td>${dose}</td><td>${units}</td><td>${amount}</td></tr>`)
+    .join('');
+
+  el.innerHTML = `
+    <div class="sales-head">
+      <div>
+        <strong>${data.name} · ${data.district}</strong>
+        <span>Ventas reales · Setiembre 2026</span>
+      </div>
+      <b>${data.totalUnits} u.</b>
+    </div>
+    <table>
+      <thead><tr><th>Dosis</th><th>Und.</th><th>Monto</th></tr></thead>
+      <tbody>
+        <tr class="group"><td colspan="3">Mounjaro</td></tr>
+        ${mounjaroRows}
+        <tr class="group"><td colspan="3">Wegovy</td></tr>
+        ${wegovyRows}
+        <tr class="total"><td>Total sede</td><td>${data.totalUnits}</td><td>${data.totalAmount}</td></tr>
+      </tbody>
+    </table>
+    <div class="sales-foot">
+      <span>Traspasos internos excluidos</span>
+      <strong>${data.totalAmount}</strong>
+    </div>`;
+
+  return new CSS2DObject(el);
 }
 
 function createPharmacy({ name, district, x, z, rotation = 0 }) {
@@ -135,14 +209,21 @@ function createPharmacy({ name, district, x, z, rotation = 0 }) {
   box([2.95, 0.13, 0.48], [-0.08, 2.12, 1.57], mat('#f8fbf9'), root);
   box([1.2, 0.12, 0.75], [0.72, 0.24, 1.68], mat('#bdccc4'), root);
 
-  roundedSign(root, name, [0, 2.62, 1.56]);
-  pharmacyCross(root, [-1.58, 2.60, 1.58]);
+  // The pharmacy sign is a camera-facing sprite so it stays legible while rotating.
+  roundedSign(root, name, [0, 2.76, 1.78]);
+  pharmacyCross(root, [-1.72, 2.70, 1.64]);
 
   // Roof equipment for extra depth
   box([1.0, 0.35, 0.72], [0.85, 2.98, -0.45], mat('#c9d6d0'), root);
   box([0.5, 0.24, 0.48], [-0.8, 2.93, -0.55], mat('#b5c6be'), root);
 
   root.add(makeLabel(name, district));
+
+  const salesPanel = makeSalesPanel(salesBySite[name]);
+  const side = x < 0 ? -1 : 1;
+  salesPanel.position.set(x + side * 2.8, 5.45, z + (x < 0 ? 0.2 : -0.2));
+  scene.add(salesPanel);
+
   return root;
 }
 
@@ -210,7 +291,7 @@ function road(w, d, x, z, rotation = 0) {
 road(15.6, 1.65, 0, 0, 0);
 road(13.6, 1.2, -0.3, 0.4, Math.PI / 2.8);
 
-// Buildings
+// Buildings + per-site sales panels
 createPharmacy({ name: 'CIDON', district: 'Lince', x: -4.1, z: -2.7, rotation: 0.11 });
 createPharmacy({ name: 'CIATOB', district: 'Surco', x: 4.1, z: 2.75, rotation: Math.PI + 0.11 });
 
