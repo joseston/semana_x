@@ -13,7 +13,7 @@
     {
       "imports": {
         "three": "https://unpkg.com/three@0.170.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.170.0/examples/jsm/"
+        "camera-controls": "https://esm.sh/camera-controls@3.1.2?external=three"
       }
     }
   </script>
@@ -31,27 +31,28 @@
       </div>
 
       <div class="location-cards">
-        <article class="location-card">
+        <button class="location-card" type="button" data-focus-site="CIDON" title="Enfocar CIDON Lince">
           <span class="pin">●</span>
           <div>
             <strong>CIDON · Lince</strong>
             <small>324 unidades · S/ 434,885.48</small>
           </div>
-        </article>
-        <article class="location-card">
+        </button>
+        <button class="location-card" type="button" data-focus-site="CIATOB" title="Enfocar CIATOB Surco">
           <span class="pin">●</span>
           <div>
             <strong>CIATOB · Surco</strong>
             <small>209 unidades · S/ 270,540.20</small>
           </div>
-        </article>
+        </button>
       </div>
     </header>
 
     <section class="viewer" aria-label="Visualización 3D de farmacias y ventas de setiembre 2026">
       <div id="scene"></div>
       <div class="scene-badge">Lima · Perú · Setiembre 2026</div>
-      <div class="controls-hint">Arrastra para rotar · rueda para acercar · clic derecho para mover</div>
+      <button class="reset-view" id="reset-view" type="button">Vista general</button>
+      <div class="controls-hint">Arrastra: rotar · clic derecho: mover · rueda: zoom al cursor · doble clic: enfocar sede</div>
     </section>
   </main>
 

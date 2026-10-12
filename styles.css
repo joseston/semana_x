@@ -20,6 +20,8 @@ body {
   font-family: "IBM Plex Sans", system-ui, sans-serif;
 }
 
+button { font: inherit; }
+
 .page-shell {
   width: min(1180px, calc(100% - 48px));
   margin: 0 auto;
@@ -82,7 +84,6 @@ h1 {
   color: #fff;
   font-size: 13px;
   font-weight: 700;
-  letter-spacing: .01em;
   box-shadow: 0 8px 20px rgba(22,123,90,.18);
 }
 
@@ -99,6 +100,9 @@ h1 {
 }
 
 .location-card {
+  appearance: none;
+  text-align: left;
+  color: inherit;
   background: rgba(251,252,250,.9);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -107,24 +111,20 @@ h1 {
   gap: 10px;
   box-shadow: 0 10px 30px rgba(31, 66, 55, .06);
   backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.location-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(22,123,90,.28);
+  box-shadow: 0 14px 34px rgba(31, 66, 55, .10);
 }
 
-.pin {
-  color: var(--green);
-  font-size: 13px;
-  line-height: 1.5;
-}
-
+.pin { color: var(--green); font-size: 13px; line-height: 1.5; }
 .location-card strong,
 .location-card small { display: block; }
-.location-card strong {
-  font-size: 13px;
-  margin-bottom: 2px;
-}
-.location-card small {
-  color: var(--muted);
-  font-size: 11px;
-}
+.location-card strong { font-size: 13px; margin-bottom: 2px; }
+.location-card small { color: var(--muted); font-size: 11px; }
 
 .viewer {
   position: relative;
@@ -149,42 +149,73 @@ h1 {
   height: 100%;
   display: block;
   cursor: grab;
+  touch-action: none;
 }
-
 #scene canvas:active { cursor: grabbing; }
 
-.panel-layer {
+.panel-layer,
+.leader-layer {
   position: absolute;
   inset: 0;
-  z-index: 12;
   pointer-events: none;
-  overflow: hidden;
+}
+.panel-layer { z-index: 12; }
+.leader-layer { z-index: 11; overflow: visible; }
+
+.leader-path {
+  fill: none;
+  stroke: rgba(22,123,90,.54);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 4 5;
+}
+.leader-dot {
+  fill: #167b5a;
+  stroke: rgba(255,255,255,.95);
+  stroke-width: 2;
 }
 
 .scene-badge,
-.controls-hint {
+.controls-hint,
+.reset-view {
   position: absolute;
   z-index: 20;
-  pointer-events: none;
   backdrop-filter: blur(10px);
 }
 
 .scene-badge {
   left: 18px;
   top: 18px;
+  pointer-events: none;
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(251, 252, 250, .84);
+  background: rgba(251, 252, 250, .86);
   border: 1px solid rgba(93, 120, 110, .14);
   color: var(--text);
   font-size: 11px;
   font-weight: 700;
 }
 
+.reset-view {
+  right: 18px;
+  top: 18px;
+  border: 1px solid rgba(22,123,90,.20);
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: rgba(251,252,250,.90);
+  color: var(--green-dark);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(30,70,56,.08);
+}
+.reset-view:hover { background: #fff; border-color: rgba(22,123,90,.38); }
+
 .controls-hint {
   left: 50%;
   bottom: 18px;
   transform: translateX(-50%);
+  pointer-events: none;
   white-space: nowrap;
   padding: 8px 13px;
   border-radius: 999px;
@@ -195,9 +226,8 @@ h1 {
 
 .sales-panel {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 255px;
+  top: 64px;
+  width: 265px;
   overflow: hidden;
   background: rgba(251,252,250,.97);
   border: 1px solid rgba(22,123,90,.22);
@@ -206,12 +236,12 @@ h1 {
   backdrop-filter: blur(12px);
   color: var(--text);
   pointer-events: auto;
-  transform-origin: center center;
-  transition: box-shadow .18s ease, border-color .18s ease, opacity .16s ease;
-  will-change: left, top, transform;
+  transition: box-shadow .18s ease, border-color .18s ease, transform .18s ease;
 }
-
+.sales-panel[data-side="left"] { left: 22px; }
+.sales-panel[data-side="right"] { right: 22px; }
 .sales-panel:hover {
+  transform: translateY(-2px);
   border-color: rgba(22,123,90,.38);
   box-shadow: 0 22px 52px rgba(27, 70, 56, .24);
 }
@@ -224,7 +254,6 @@ h1 {
   padding: 11px 12px 9px;
   border-bottom: 1px solid #e1ebe6;
 }
-
 .sales-head strong,
 .sales-head span { display: block; }
 .sales-head strong {
@@ -251,7 +280,6 @@ h1 {
   border-collapse: collapse;
   font-size: 9px;
 }
-
 .sales-panel th,
 .sales-panel td {
   padding: 4px 9px;
@@ -259,7 +287,6 @@ h1 {
   text-align: right;
   white-space: nowrap;
 }
-
 .sales-panel th:first-child,
 .sales-panel td:first-child { text-align: left; }
 .sales-panel th {
@@ -269,7 +296,6 @@ h1 {
   text-transform: uppercase;
   letter-spacing: .02em;
 }
-
 .sales-panel .group td {
   padding-top: 6px;
   padding-bottom: 3px;
@@ -278,7 +304,6 @@ h1 {
   font-weight: 700;
   background: #f6faf8;
 }
-
 .sales-panel .total td {
   font-weight: 700;
   color: var(--text);
@@ -293,24 +318,38 @@ h1 {
   color: var(--muted);
   font-size: 8px;
 }
+.sales-foot strong { color: var(--green-dark); font-size: 10px; }
 
-.sales-foot strong {
+.panel-action {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid #edf2ef;
+  background: #f7faf8;
   color: var(--green-dark);
-  font-size: 10px;
+  padding: 7px 10px;
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
 }
+.panel-action:hover { background: #eef7f2; }
 
 @media (max-width: 900px) {
   .page-shell { width: min(100% - 24px, 1180px); padding-top: 28px; }
   .hero { grid-template-columns: 1fr; gap: 22px; }
   .location-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .viewer { min-height: 560px; height: 72vh; }
-  .sales-panel { width: 220px; }
+  .sales-panel { width: 225px; top: 62px; }
+  .sales-panel[data-side="left"] { left: 12px; }
+  .sales-panel[data-side="right"] { right: 12px; }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 620px) {
   .location-cards { grid-template-columns: 1fr; }
-  .viewer { min-height: 560px; height: 72vh; border-radius: 18px; }
-  .controls-hint { font-size: 9px; bottom: 12px; }
-  .sales-panel { width: 190px; }
-  .sales-panel th, .sales-panel td { padding-left: 6px; padding-right: 6px; }
+  .viewer { min-height: 720px; height: 78vh; border-radius: 18px; }
+  .controls-hint { font-size: 9px; bottom: 12px; max-width: calc(100% - 24px); white-space: normal; text-align: center; }
+  .sales-panel { width: calc(100% - 24px); left: 12px !important; right: auto !important; }
+  .sales-panel[data-side="left"] { top: 62px; }
+  .sales-panel[data-side="right"] { top: 326px; }
+  .scene-badge { display: none; }
+  .reset-view { top: 12px; right: 12px; }
 }
