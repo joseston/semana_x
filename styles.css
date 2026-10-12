@@ -125,3 +125,114 @@ h1 { margin: 0; font-family: "Bricolage Grotesque", system-ui, sans-serif; font-
   .report-kpis article { min-width: 0; }
   .lot-card-head { align-items: flex-start; flex-direction: column; }
 }
+
+/* Paleta visual: rojo claro general, Lince rojo claro y Surco azul claro. */
+:root {
+  --bg: #fbf2f2;
+  --surface: #fffafa;
+  --surface-2: #f8eaea;
+  --text: #3b292b;
+  --muted: #806d70;
+  --green: #b85a63;
+  --green-dark: #8e4149;
+  --border: #ecd5d8;
+  --shadow: 0 24px 60px rgba(126, 72, 78, 0.13);
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,.96), rgba(255,255,255,0) 34%),
+    linear-gradient(180deg, #fffafa 0%, #fbf1f2 100%);
+}
+
+.viewer {
+  background: linear-gradient(180deg, #faeeee, #f6e5e7);
+  border-color: #ead0d3;
+}
+
+.slide-tab:hover,
+.location-card:hover,
+.slide-arrow:hover,
+.reset-view:hover {
+  border-color: rgba(184,90,99,.38);
+}
+
+.slide-tab.is-active,
+.period-pill {
+  box-shadow: 0 8px 20px rgba(184,90,99,.20);
+}
+
+.eyebrow::before {
+  box-shadow: 0 0 0 4px rgba(184,90,99,.10);
+}
+
+.location-card[data-focus-site="LINCE"] {
+  background: rgba(255,239,240,.95);
+  border-color: rgba(200,104,112,.28);
+}
+.location-card[data-focus-site="LINCE"] .pin { color: #c96870; }
+
+.location-card[data-focus-site="SURCO"] {
+  background: rgba(239,247,252,.96);
+  border-color: rgba(103,157,191,.30);
+}
+.location-card[data-focus-site="SURCO"] .pin { color: #679dbf; }
+
+.leader-path { stroke: rgba(184,90,99,.50); }
+.leader-dot { fill: #b85a63; }
+.leader-path[data-site="LINCE"] { stroke: rgba(201,104,112,.70); }
+.leader-dot[data-site="LINCE"] { fill: #c96870; }
+.leader-path[data-site="SURCO"] { stroke: rgba(103,157,191,.72); }
+.leader-dot[data-site="SURCO"] { fill: #679dbf; }
+
+.scene-badge,
+.reset-view {
+  background: rgba(255,250,250,.90);
+  border-color: rgba(184,90,99,.20);
+}
+
+.controls-hint {
+  background: rgba(102,53,59,.82);
+}
+
+.sales-panel {
+  box-shadow: 0 18px 42px rgba(112,67,72,.16);
+}
+.sales-panel[data-site="LINCE"] {
+  background: rgba(255,247,247,.98);
+  border-color: rgba(201,104,112,.34);
+}
+.sales-panel[data-site="LINCE"] .sales-head,
+.sales-panel[data-site="LINCE"] .group td {
+  background: #fff0f1;
+}
+.sales-panel[data-site="LINCE"] .sales-head b {
+  background: #f7dfe1;
+  color: #9c4e55;
+}
+
+.sales-panel[data-site="SURCO"] {
+  background: rgba(247,251,254,.98);
+  border-color: rgba(103,157,191,.36);
+}
+.sales-panel[data-site="SURCO"] .sales-head,
+.sales-panel[data-site="SURCO"] .group td {
+  background: #eef7fc;
+}
+.sales-panel[data-site="SURCO"] .sales-head b {
+  background: #dcecf6;
+  color: #527e9d;
+}
+
+.sales-panel .total td { background: rgba(255,255,255,.62); }
+.panel-action { background: rgba(255,255,255,.55); }
+.panel-action:hover { background: rgba(184,90,99,.07); }
+
+.report-kpis article,
+.lot-card {
+  background: rgba(255,250,250,.96);
+}
+.lot-table thead th { background: #fae9eb; border-bottom-color: #ead0d3; }
+.lot-table tbody tr:hover { background: #fff4f4; }
+.lot-table td:first-child strong { background: #f5dfe1; }
+.rate-hot { background: linear-gradient(90deg, transparent, rgba(184,90,99,.07)); }
