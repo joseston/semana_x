@@ -23,6 +23,17 @@ import {
   createMotorcyclist,
   updateMotorcyclist,
 } from './animations/motorcyclist.js';
+import {
+  createCar,
+  updateCar,
+} from './animations/car.js';
+import {
+  createTrafficClock,
+  advanceTraffic,
+  getMotorcycleProgress,
+  getCarProgress,
+  TRAFFIC_DIAGNOSTICS,
+} from './animations/traffic.js';
 
 function focusSite(siteKey) {
   const root = siteRoots[siteKey];
@@ -48,7 +59,15 @@ function resetView() {
 }
 
 buildScene({ onFocus: focusSite });
+
+const trafficClock = createTrafficClock();
 const motorcyclist = createMotorcyclist();
+const car = createCar();
+
+console.info(
+  `[traffic] velocidad compartida: ${TRAFFIC_DIAGNOSTICS.vehicleSpeed.toFixed(2)} u/s · `
+  + `separación en cruce: ${TRAFFIC_DIAGNOSTICS.safetySeparationSeconds.toFixed(2)} s`,
+);
 
 document.querySelector('#reset-view').addEventListener('click', resetView);
 document.querySelectorAll('[data-focus-site]').forEach((button) => {
@@ -106,8 +125,11 @@ function animate() {
   const delta = Math.min(clock.getDelta(), 1 / 20);
   controls.update(delta);
 
+  advanceTraffic(trafficClock, delta);
+  updateMotorcyclist(motorcyclist, getMotorcycleProgress(trafficClock));
+  updateCar(car, getCarProgress(trafficClock));
+
   if (slides.getActiveSlide() === 0) {
-    updateMotorcyclist(motorcyclist, delta);
     updateLeaderLines();
     renderer.render(scene, camera);
   }

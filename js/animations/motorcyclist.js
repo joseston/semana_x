@@ -1,11 +1,6 @@
 import * as THREE from 'three';
 import { scene, mat, box } from '../core.js';
-
-const DURATION_SECONDS = 10;
-const START_X = -8.35;
-const END_X = 8.35;
-const LANE_Z = 0.42;
-const BASE_Y = 0.11;
+import { MOTORCYCLE_ROUTE, TRAVEL_DISTANCE } from './traffic.js';
 
 function createWheel(x, parent, materials, wheels) {
   const material = mat('#252525', { transparent: true, opacity: 0 });
@@ -39,7 +34,11 @@ function createWheel(x, parent, materials, wheels) {
 
 export function createMotorcyclist() {
   const group = new THREE.Group();
-  group.position.set(START_X, BASE_Y, LANE_Z);
+  group.position.set(
+    MOTORCYCLE_ROUTE.startX,
+    MOTORCYCLE_ROUTE.baseY,
+    MOTORCYCLE_ROUTE.laneZ,
+  );
   group.scale.setScalar(0.9);
   group.visible = false;
 
@@ -114,12 +113,7 @@ export function createMotorcyclist() {
 
   scene.add(group);
 
-  return {
-    group,
-    materials,
-    wheels,
-    elapsed: 0,
-  };
+  return { group, materials, wheels };
 }
 
 function getOpacity(progress) {
@@ -135,22 +129,23 @@ function getOpacity(progress) {
   return 1;
 }
 
-export function updateMotorcyclist(state, delta) {
-  state.elapsed = (state.elapsed + delta) % DURATION_SECONDS;
-  const progress = state.elapsed / DURATION_SECONDS;
+export function updateMotorcyclist(state, progress) {
   const opacity = getOpacity(progress);
 
   state.group.visible = opacity > 0.01;
-  state.group.position.x = THREE.MathUtils.lerp(START_X, END_X, progress);
-  state.group.position.y = BASE_Y + Math.sin(progress * Math.PI * 10) * 0.008;
-  state.group.position.z = LANE_Z;
+  state.group.position.x = THREE.MathUtils.lerp(
+    MOTORCYCLE_ROUTE.startX,
+    MOTORCYCLE_ROUTE.endX,
+    progress,
+  );
+  state.group.position.y = MOTORCYCLE_ROUTE.baseY + Math.sin(progress * Math.PI * 10) * 0.008;
+  state.group.position.z = MOTORCYCLE_ROUTE.laneZ;
 
   state.materials.forEach((material) => {
     material.opacity = opacity;
   });
 
-  const travelDistance = END_X - START_X;
-  const wheelTurns = travelDistance / (2 * Math.PI * 0.18);
+  const wheelTurns = TRAVEL_DISTANCE / (2 * Math.PI * 0.18);
   const wheelAngle = -progress * wheelTurns * Math.PI * 2;
   state.wheels.forEach((wheel) => {
     wheel.rotation.y = wheelAngle;
