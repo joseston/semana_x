@@ -104,18 +104,6 @@ function createLandscape() {
   createStreetLight(3.4, -1.4, Math.PI);
   createStreetLight(-1.0, -2.8, Math.PI / 2);
   createStreetLight(1.0, 2.8, -Math.PI / 2);
-
-  for (let i = 0; i < 13; i++) {
-    const t = i / 12;
-    const x = THREE.MathUtils.lerp(-3.1, 3.1, t);
-    const z = Math.sin(t * Math.PI) * 0.82;
-    const marker = new THREE.Mesh(
-      new THREE.SphereGeometry(0.075, 12, 8),
-      mat(colors.accent),
-    );
-    marker.position.set(x, 0.18, z);
-    scene.add(marker);
-  }
 }
 
 export function buildScene({ onFocus }) {

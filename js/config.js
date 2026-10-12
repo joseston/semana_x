@@ -83,7 +83,7 @@ export const siteLayout = [
     name: 'CIDON',
     x: 5.2,
     z: 3.45,
-    rotation: Math.PI + 0.11,
+    rotation: 0.55,
     side: 'right',
   },
 ];

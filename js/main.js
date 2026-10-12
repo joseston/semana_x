@@ -19,6 +19,10 @@ import {
   updateLeaderLines,
 } from './ui/sales-panels.js';
 import { setupSlides } from './ui/slides.js';
+import {
+  createMotorcyclist,
+  updateMotorcyclist,
+} from './animations/motorcyclist.js';
 
 function focusSite(siteKey) {
   const root = siteRoots[siteKey];
@@ -44,6 +48,7 @@ function resetView() {
 }
 
 buildScene({ onFocus: focusSite });
+const motorcyclist = createMotorcyclist();
 
 document.querySelector('#reset-view').addEventListener('click', resetView);
 document.querySelectorAll('[data-focus-site]').forEach((button) => {
@@ -102,6 +107,7 @@ function animate() {
   controls.update(delta);
 
   if (slides.getActiveSlide() === 0) {
+    updateMotorcyclist(motorcyclist, delta);
     updateLeaderLines();
     renderer.render(scene, camera);
   }
