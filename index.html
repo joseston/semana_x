@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=20261012-2" />
   <script type="importmap">
     {
       "imports": {
@@ -62,42 +62,48 @@
           <div>
             <span class="eyebrow">Trazabilidad de inventario</span>
             <div class="title-row"><h1>Rotación por lotes</h1><span class="period-pill">Setiembre–Octubre 2026</span></div>
-            <p>Velocidad de salida y duración observada de LOT2 a LOT12.</p>
+            <p>Velocidad de salida, distribución por sede y duración observada de LOT1 a LOT12.</p>
           </div>
           <div class="report-kpis">
-            <article><span>Lotes analizados</span><strong>11</strong></article>
-            <article><span>Unidades</span><strong>350</strong></article>
+            <article><span>Lotes analizados</span><strong>12</strong></article>
+            <article><span>Unidades</span><strong>371</strong><small>Lince 225 · Surco 146</small></article>
             <article><span>Mayor ritmo</span><strong>8.1 u./día</strong><small>LOT8</small></article>
           </div>
         </header>
 
         <section class="lot-card">
-          <div class="lot-card-head"><div><span class="section-kicker">Detalle operativo</span><h2>Comportamiento de lotes</h2></div><div class="table-note">Valores según el reporte operativo suministrado</div></div>
+          <div class="lot-card-head"><div><span class="section-kicker">Detalle operativo</span><h2>Comportamiento de lotes</h2></div><div class="table-note">Ventas por sede + velocidad de agotamiento</div></div>
           <div class="table-scroll">
             <table class="lot-table">
-              <thead><tr><th>Lote</th><th>Composición</th><th>Unidades</th><th>Registro</th><th>Brecha</th><th>Inicio</th><th>Cierre</th><th>Duración</th><th>Ritmo</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>Lote</th><th>Fármacos y concentración</th><th>Unidades totales</th><th>Vendidos en Lince</th><th>Vendidos en Surco</th><th>Entrada</th><th>Cadencia de entrada</th><th>1ra venta</th><th>Venta fin (agotado)</th><th>Tiempo en terminarse</th><th>Velocidad diaria</th>
+                </tr>
+              </thead>
               <tbody>
-                <tr><td><strong>LOT2</strong></td><td>Mounjaro <span>5 mg: 20 · 2.5 mg: 10 · 10 mg: 5 · 7.5 mg: 5</span></td><td class="qty">40 u.</td><td>11/09 16:04</td><td>1.0 día</td><td>11/09 09:18</td><td>01/10 07:39</td><td><strong>19.6 días</strong><span>478 hrs*</span></td><td class="rate">2.0 u./día</td></tr>
-                <tr><td><strong>LOT3</strong></td><td>Wegovy 2.4 mg <span>100%</span></td><td class="qty">10 u.</td><td>12/09 17:57</td><td>1.1 días</td><td>12/09 16:01</td><td>17/09 13:44</td><td><strong>4.8 días</strong><span>118 hrs</span></td><td class="rate">2.1 u./día</td></tr>
-                <tr><td><strong>LOT4</strong></td><td>Mounjaro <span>5 mg: 30 · 10 mg: 10</span></td><td class="qty">40 u.</td><td>14/09 21:02</td><td>2.1 días</td><td>14/09 08:45</td><td>19/09 10:56</td><td><strong>4.6 días</strong><span>122 hrs</span></td><td class="rate rate-hot">7.9 u./día</td></tr>
-                <tr><td><strong>LOT5</strong></td><td>Mounjaro <span>5 mg: 40 · 2.5 mg: 10</span></td><td class="qty">50 u.</td><td>14/09 21:36</td><td>0.0 días</td><td>14/09 17:16</td><td>21/09 09:37</td><td><strong>6.5 días</strong><span>160 hrs</span></td><td class="rate rate-hot">7.5 u./día</td></tr>
-                <tr><td><strong>LOT6</strong></td><td>Mounjaro <span>2.5 mg: 24 · 7.5 mg: 6</span></td><td class="qty">30 u.</td><td>17/09 16:18</td><td>2.8 días</td><td>17/09 18:39</td><td>29/09 10:09</td><td><strong>11.7 días</strong><span>280 hrs</span></td><td class="rate">2.6 u./día</td></tr>
-                <tr><td><strong>LOT7</strong></td><td>Wegovy 2.4 mg <span>100%</span></td><td class="qty">10 u.</td><td>19/09 14:31</td><td>1.9 días</td><td>19/09 09:41</td><td>25/09 19:41</td><td><strong>6.2 días</strong><span>154 hrs</span></td><td class="rate">1.6 u./día</td></tr>
-                <tr><td><strong>LOT8</strong></td><td>Mounjaro <span>5 mg: 30 · 10 mg: 10</span></td><td class="qty">40 u.</td><td>21/09 19:19</td><td>2.2 días</td><td>21/09 15:41</td><td>26/09 14:54</td><td><strong>4.8 días</strong><span>119 hrs</span></td><td class="rate rate-best">8.1 u./día</td></tr>
-                <tr><td><strong>LOT9</strong></td><td>Mounjaro <span>5 mg: 30 · 2.5 mg: 10</span></td><td class="qty">40 u.</td><td>23/09 20:37</td><td>2.1 días</td><td>23/09 17:58</td><td>28/09 23:08</td><td><strong>5.1 días</strong><span>125 hrs</span></td><td class="rate rate-hot">7.7 u./día</td></tr>
-                <tr><td><strong>LOT10</strong></td><td>Wegovy 2.4 mg <span>100%</span></td><td class="qty">10 u.</td><td>25/09 13:51</td><td>1.7 días</td><td>25/09 13:19</td><td>03/10 10:03</td><td><strong>7.8 días</strong><span>189 hrs</span></td><td class="rate">1.3 u./día</td></tr>
-                <tr><td><strong>LOT11</strong></td><td>Mounjaro <span>10 mg: 10 · 5 mg: 10 · 2.5 mg: 10</span></td><td class="qty">30 u.</td><td>25/09 21:48</td><td>0.3 días</td><td>25/09 19:49</td><td>03/10 09:25</td><td><strong>7.5 días</strong><span>182 hrs</span></td><td class="rate">4.0 u./día</td></tr>
-                <tr><td><strong>LOT12</strong></td><td>Mounjaro <span>5 mg: 40 · 2.5 mg: 10</span></td><td class="qty">50 u.</td><td>28/09 20:24</td><td>2.9 días</td><td>28/09 06:46</td><td>05/10 19:05</td><td><strong>6.9 días</strong><span>180 hrs</span></td><td class="rate rate-hot">6.7 u./día</td></tr>
+                <tr><td><strong>LOT1</strong></td><td>Mounjaro <span>5 mg: 11 · 2.5 mg: 7 · 7.5 mg: 2 · 10 mg: 1</span></td><td class="qty">21 u.</td><td class="qty">12 u.</td><td class="qty">9 u.</td><td>10/09 17:04</td><td>Inicio</td><td>10/09 12:38</td><td>20/09 12:33</td><td><strong>9.8 días</strong><span>240 h</span></td><td class="rate">2.1 u./d</td></tr>
+                <tr><td><strong>LOT2</strong></td><td>Mounjaro <span>5 mg: 20 · 2.5 mg: 10 · 10 mg: 5 · 7.5 mg: 5</span></td><td class="qty">40 u.</td><td class="qty">31 u.</td><td class="qty">9 u.</td><td>11/09 16:04</td><td>1.0 d</td><td>11/09 09:18</td><td>01/10 07:39</td><td><strong>19.6 días</strong><span>478 h*</span></td><td class="rate">2.0 u./d</td></tr>
+                <tr><td><strong>LOT3</strong></td><td>Wegovy 2.4 mg <span>100%</span></td><td class="qty">10 u.</td><td class="qty">7 u.</td><td class="qty">3 u.</td><td>12/09 17:57</td><td>1.1 d</td><td>12/09 16:01</td><td>17/09 13:44</td><td><strong>4.8 días</strong><span>118 h</span></td><td class="rate">2.1 u./d</td></tr>
+                <tr><td><strong>LOT4</strong></td><td>Mounjaro <span>5 mg: 30 · 10 mg: 10</span></td><td class="qty">40 u.</td><td class="qty">37 u.</td><td class="qty">3 u.</td><td>14/09 21:02</td><td>2.1 d</td><td>14/09 08:45</td><td>19/09 10:56</td><td><strong>4.6 días</strong><span>122 h</span></td><td class="rate rate-hot">7.9 u./d</td></tr>
+                <tr><td><strong>LOT5</strong></td><td>Mounjaro <span>5 mg: 40 · 2.5 mg: 10</span></td><td class="qty">50 u.</td><td class="qty">7 u.</td><td class="qty">43 u.</td><td>14/09 21:36</td><td>0.0 d</td><td>14/09 17:16</td><td>21/09 09:37</td><td><strong>6.5 días</strong><span>160 h</span></td><td class="rate rate-hot">7.5 u./d</td></tr>
+                <tr><td><strong>LOT6</strong></td><td>Mounjaro <span>2.5 mg: 24 · 7.5 mg: 6</span></td><td class="qty">30 u.</td><td class="qty">21 u.</td><td class="qty">9 u.</td><td>17/09 16:18</td><td>2.8 d</td><td>17/09 18:39</td><td>29/09 10:09</td><td><strong>11.7 días</strong><span>280 h</span></td><td class="rate">2.6 u./d</td></tr>
+                <tr><td><strong>LOT7</strong></td><td>Wegovy 2.4 mg <span>100%</span></td><td class="qty">10 u.</td><td class="qty">10 u.</td><td class="qty">0 u.</td><td>19/09 14:31</td><td>1.9 d</td><td>19/09 09:41</td><td>25/09 19:41</td><td><strong>6.2 días</strong><span>154 h</span></td><td class="rate">1.6 u./d</td></tr>
+                <tr><td><strong>LOT8</strong></td><td>Mounjaro <span>5 mg: 30 · 10 mg: 10</span></td><td class="qty">40 u.</td><td class="qty">14 u.</td><td class="qty">26 u.</td><td>21/09 19:19</td><td>2.2 d</td><td>21/09 15:41</td><td>26/09 14:54</td><td><strong>4.8 días</strong><span>119 h</span></td><td class="rate rate-best">8.1 u./d</td></tr>
+                <tr><td><strong>LOT9</strong></td><td>Mounjaro <span>5 mg: 30 · 2.5 mg: 10</span></td><td class="qty">40 u.</td><td class="qty">26 u.</td><td class="qty">14 u.</td><td>23/09 20:37</td><td>2.1 d</td><td>23/09 17:58</td><td>28/09 23:08</td><td><strong>5.1 días</strong><span>125 h</span></td><td class="rate rate-hot">7.7 u./d</td></tr>
+                <tr><td><strong>LOT10</strong></td><td>Wegovy 2.4 mg <span>100%</span></td><td class="qty">10 u.</td><td class="qty">8 u.</td><td class="qty">2 u.</td><td>25/09 13:51</td><td>1.7 d</td><td>25/09 13:19</td><td>03/10 10:03</td><td><strong>7.8 días</strong><span>189 h</span></td><td class="rate">1.3 u./d</td></tr>
+                <tr><td><strong>LOT11</strong></td><td>Mounjaro <span>10 mg: 10 · 5 mg: 10 · 2.5 mg: 10</span></td><td class="qty">30 u.</td><td class="qty">20 u.</td><td class="qty">10 u.</td><td>25/09 21:48</td><td>0.3 d</td><td>25/09 19:49</td><td>03/10 09:25</td><td><strong>7.5 días</strong><span>182 h</span></td><td class="rate">4.0 u./d</td></tr>
+                <tr><td><strong>LOT12</strong></td><td>Mounjaro <span>5 mg: 40 · 2.5 mg: 10</span></td><td class="qty">50 u.</td><td class="qty">32 u.</td><td class="qty">18 u.</td><td>28/09 20:24</td><td>2.9 d</td><td>28/09 06:46</td><td>05/10 19:05</td><td><strong>6.9 días</strong><span>180 h</span></td><td class="rate rate-hot">6.7 u./d</td></tr>
+                <tr><td><strong>TOTAL</strong></td><td>—</td><td class="qty">371 u.</td><td class="qty">225 u. <span>60.6%</span></td><td class="qty">146 u. <span>39.4%</span></td><td>—</td><td><strong>~2.1 d</strong></td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
               </tbody>
             </table>
           </div>
-          <div class="lot-footnote">* LOT2 conserva la duración reportada de 19.6 días (478 horas).</div>
+          <div class="lot-footnote">* LOT2 conserva la duración reportada de 19.6 días (478 horas). · Total distribuido: 225 unidades Lince (60.6%) y 146 Surco (39.4%).</div>
         </section>
 
-        <div class="slide-footer"><button type="button" class="slide-arrow slide-arrow-back" data-slide-target="0"><b>←</b> Vista 3D</button><span>Hoja 2 de 2 · Rotación y velocidad por lote</span></div>
+        <div class="slide-footer"><button type="button" class="slide-arrow slide-arrow-back" data-slide-target="0"><b>←</b> Vista 3D</button><span>Hoja 2 de 2 · Rotación, distribución y velocidad por lote</span></div>
       </section>
     </div>
   </main>
-  <script type="module" src="./app.js"></script>
+  <script type="module" src="./app.js?v=20261012-2"></script>
 </body>
 </html>
